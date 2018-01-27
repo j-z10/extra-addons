@@ -1,0 +1,2 @@
+# extra-addons
+Odoo addons
