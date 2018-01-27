@@ -10,6 +10,7 @@ Trans workflow on odoo-10 to odoo-11.0
         'security/ir.model.access.csv',
 
         'views/workflow_view.xml',
+        'views/templates.xml',
     ],
     'installable': True,
 }

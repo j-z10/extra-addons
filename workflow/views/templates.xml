@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+        <template id="assets_backend" inherit_id="web.assets_backend" name="workflow assets">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/workflow/static/src/view_manager.js"></script>
+            </xpath>
+        </template>
+    </data>
+</odoo>
