@@ -48,18 +48,20 @@ class WorkflowMixIn(models.AbstractModel):
     @api.model
     @api.returns('self', lambda value: value.id)
     def create(self, vals):
-        new_record = super().create(vals)
+        new_record = super(WorkflowMixIn, self).create(vals)
         new_record.create_workflow()
         return new_record
 
     @api.multi
     def write(self, vals):
-        res = super().write(vals)
+        res = super(WorkflowMixIn, self).write(vals)
         self.step_workflow()
         return res
 
     @api.multi
     def unlink(self):
+        if not self:
+            return
         self.delete_workflow()
-        return super().unlink()
+        return super(WorkflowMixIn, self).unlink()
 

@@ -6,9 +6,9 @@
       <field name="arch" type="xml">
         <tree>
           <field name="name"/>
-          <field name="state"/>
           <field name="value"/>
           <field name="value2"/>
+          <field name="state"/>
         </tree>
       </field>
     </record>
@@ -19,7 +19,7 @@
       <field name="arch" type="xml">
         <form>
           <header>
-            <button name="submit" string="Submit" states="draft" type="workflow"/>
+            <button name="submit" string="Submit wkf" states="draft" type="workflow"/>
             <button name="agree" string="Agree" states="to_approve" type="workflow"/>
             <button name="deny" string="Deny" states="to_approve" type="workflow"/>
             <field name="state" widget="statusbar"/>

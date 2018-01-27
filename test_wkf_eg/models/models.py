@@ -19,5 +19,7 @@ class TestWkfEg(models.Model):
     ], default='draft')
 
     @api.depends('value')
+    @api.multi
     def _value_pc(self):
-        self.value2 = float(self.value) / 100
+        for r in self:
+            r.value2 = float(r.value) / 100
