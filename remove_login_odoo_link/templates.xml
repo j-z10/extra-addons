@@ -1,0 +1,13 @@
+<odoo>
+    <data>
+        <template id='remove_login_odoo_link' inherit_id='web.login_layout'>
+            <xpath expr='//div[@t-if="not disable_footer"]' position='replace'>
+                <div class="text-right" t-if="not disable_footer">
+                    <t t-if="not disable_database_manager">
+                        <a class="" href="/web/database/manager">Manage Databases</a>
+                    </t>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>
