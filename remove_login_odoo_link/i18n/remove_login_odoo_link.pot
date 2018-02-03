@@ -18,5 +18,5 @@ msgstr ""
 #. module: remove_login_odoo_link
 #: model:ir.ui.view,arch_db:remove_login_odoo_link.remove_login_odoo_link
 msgid "Manage Databases"
-msgstr "管理数据库"
+msgstr ""
 
