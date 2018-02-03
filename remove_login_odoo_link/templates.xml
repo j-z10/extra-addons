@@ -1,5 +1,6 @@
 <odoo>
     <data>
+        <!--移除/web/login界面中， Powered by Odoo的超链接-->
         <template id='remove_login_odoo_link' inherit_id='web.login_layout'>
             <xpath expr='//div[@t-if="not disable_footer"]' position='replace'>
                 <div class="text-right" t-if="not disable_footer">
@@ -9,5 +10,13 @@
                 </div>
             </xpath>
         </template>
+
+        <!--替换/web/login下的 title-->
+        <template id='remove_web_head_title' inherit_id='web.layout'>
+            <xpath expr='//head/title' position='replace'>
+                <title t-esc="title or 'Your Company Name'"/>
+            </xpath>
+        </template>
+
     </data>
 </odoo>
