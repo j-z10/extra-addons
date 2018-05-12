@@ -5,6 +5,7 @@ import subprocess
 import time
 import datetime
 import dateutil.parser
+import signal
 
 import requests
 import json
@@ -12,7 +13,7 @@ import json
 from odoo import models, fields, api
 from odoo.tools import config
 
-from .tools import fqdn, run, dt2time
+from .tools import fqdn, run, dt2time, mkdirs
 
 _logger = logging.getLogger(__name__)
 
@@ -194,44 +195,42 @@ class RunbotRepo(models.Model):
         to_be_skipped_ids = Build.search(skippable_domain, order='sequence desc', offset=running_max)
         Build.browse(to_be_skipped_ids).skip()
 
-    def scheduler(self, cr, uid, ids=None, context=None):
-        icp = self.pool['ir.config_parameter']
-        workers = int(icp.get_param(cr, uid, 'runbot.workers', default=6))
-        running_max = int(icp.get_param(cr, uid, 'runbot.running_max', default=75))
+    def scheduler(self):
+        icp = self.env['ir.config_parameter']
+        workers = int(icp.get_param('runbot.workers', default=6))
+        running_max = int(icp.get_param('runbot.running_max', default=75))
         host = fqdn()
 
-        Build = self.pool['runbot.build']
-        domain = [('repo_id', 'in', ids)]
+        Build = self.env['runbot.build']
+        domain = [('repo_id', 'in', self.ids)]
         domain_host = domain + [('host', '=', host)]
 
         # schedule jobs (transitions testing -> running, kill jobs, ...)
-        build_ids = Build.search(cr, uid, domain_host + [('state', 'in', ['testing', 'running'])])
-        Build.schedule(cr, uid, build_ids)
+        build_ids = Build.search(domain_host + [('state', 'in', ['testing', 'running'])])
+        build_ids.schedule()
 
         # launch new tests
-        testing = Build.search_count(cr, uid, domain_host + [('state', '=', 'testing')])
-        pending = Build.search_count(cr, uid, domain + [('state', '=', 'pending')])
+        testing = Build.search_count(domain_host + [('state', '=', 'testing')])
+        pending = Build.search_count(domain + [('state', '=', 'pending')])
 
         while testing < workers and pending > 0:
 
             # find sticky pending build if any, otherwise, last pending (by id, not by sequence) will do the job
-            pending_ids = Build.search(cr, uid, domain + [('state', '=', 'pending'), ('branch_id.sticky', '=', True)], limit=1)
+            pending_ids = Build.search(domain + [('state', '=', 'pending'), ('branch_id.sticky', '=', True)], limit=1)
             if not pending_ids:
-                pending_ids = Build.search(cr, uid, domain + [('state', '=', 'pending')], order="sequence", limit=1)
-
-            pending_build = Build.browse(cr, uid, pending_ids[0])
-            pending_build.schedule()
+                pending_ids = Build.search(domain + [('state', '=', 'pending')], order="sequence", limit=1)
+            pending_ids.schedule()
 
             # compute the number of testing and pending jobs again
-            testing = Build.search_count(cr, uid, domain_host + [('state', '=', 'testing')])
-            pending = Build.search_count(cr, uid, domain + [('state', '=', 'pending')])
+            testing = Build.search_count(domain_host + [('state', '=', 'testing')])
+            pending = Build.search_count(domain + [('state', '=', 'pending')])
 
         # terminate and reap doomed build
-        build_ids = Build.search(cr, uid, domain_host + [('state', '=', 'running')])
+        build_ids = Build.search(domain_host + [('state', '=', 'running')])
         # sort builds: the last build of each sticky branch then the rest
         sticky = {}
         non_sticky = []
-        for build in Build.browse(cr, uid, build_ids):
+        for build in build_ids:
             if build.branch_id.sticky and build.branch_id.id not in sticky:
                 sticky[build.branch_id.id] = build.id
             else:
@@ -239,23 +238,22 @@ class RunbotRepo(models.Model):
         build_ids = sticky.values()
         build_ids += non_sticky
         # terminate extra running builds
-        Build.kill(cr, uid, build_ids[running_max:])
-        Build.reap(cr, uid, build_ids)
+        build_ids[running_max:].kill()
+        build_ids.reap()
 
     @api.model
     def reload_nginx(self):
         settings = {}
         settings['port'] = config['xmlrpc_port']
-        nginx_dir = os.path.join(self.root(cr, uid), 'nginx')
+        nginx_dir = os.path.join(self.root(), 'nginx')
         settings['nginx_dir'] = nginx_dir
-        ids = self.search(cr, uid, [('nginx','=',True)], order='id')
+        ids = self.search([('nginx', '=', True)], order='id')
         if ids:
-            build_ids = self.pool['runbot.build'].search(cr, uid, [('repo_id','in',ids), ('state','=','running')])
-            settings['builds'] = self.pool['runbot.build'].browse(cr, uid, build_ids)
+            settings['builds'] = self.env['runbot.build'].search([('repo_id', 'in', ids), ('state', '=', 'running')])
 
-            nginx_config = self.pool['ir.ui.view'].render(cr, uid, "runbot.nginx_config", settings)
+            nginx_config = self.env['ir.ui.view'].render("runbot.nginx_config", settings)
             mkdirs([nginx_dir])
-            open(os.path.join(nginx_dir, 'nginx.conf'),'w').write(nginx_config)
+            open(os.path.join(nginx_dir, 'nginx.conf'), 'w').write(nginx_config)
             try:
                 _logger.debug('reload nginx')
                 pid = int(open(os.path.join(nginx_dir, 'nginx.pid')).read().strip(' \n'))
