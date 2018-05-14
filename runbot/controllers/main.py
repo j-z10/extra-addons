@@ -45,11 +45,9 @@ class RunbotController(http.Controller):
         repo_obj = env['runbot.repo']
         count = lambda dom: build_obj.search_count(dom)
 
-        repo_ids = repo_obj.search([])
-        repos = repo_obj.browse(repo_ids)
+        repos = repo_obj.search([])
         if not repo and repos:
             repo = repos[0]
-
         context = {
             'repos': repos,
             'repo': repo,
@@ -69,7 +67,7 @@ class RunbotController(http.Controller):
                 domain += ['|', '|', ('dest', 'ilike', search), ('subject', 'ilike', search),
                            ('branch_id.branch_name', 'ilike', search)]
 
-            build_ids = build_obj.search(domain, limit=int(limit))
+            build_ids = build_obj.search(domain, limit=int(limit)).ids
             branch_ids, build_by_branch_ids = [], {}
 
             if build_ids:
@@ -78,7 +76,7 @@ class RunbotController(http.Controller):
                 ORDER BY bu.sequence DESC
                 """
                 sticky_dom = [('repo_id', '=', repo.id), ('sticky', '=', True)]
-                sticky_branch_ids = [] if search else branch_obj.search(sticky_dom)
+                sticky_branch_ids = [] if search else branch_obj.search(sticky_dom).ids
                 request.env.cr.execute(branch_query, (tuple(build_ids),))
                 branch_ids = uniq_list(sticky_branch_ids + [br[0] for br in request.env.cr.fetchall()])
 
@@ -238,20 +236,18 @@ class RunbotController(http.Controller):
         real_build = build.duplicate_id if build.state == 'duplicate' else build
 
         # other builds
-        build_ids = Build.search([('branch_id', '=', build.branch_id.id)])
-        other_builds = Build.browse(build_ids)
+        other_builds = Build.search([('branch_id', '=', build.branch_id.id)])
 
         domain = ['|', ('dbname', '=like', '%s-%%' % real_build.dest), ('build_id', '=', real_build.id)]
 
         if search:
             domain.append(('name', 'ilike', search))
-        logging_ids = Logging.sudo().search(domain)
 
         context = {
             'repo': build.repo_id,
             'build': self.build_info(build),
             'br': {'branch': build.branch_id},
-            'logs': Logging.sudo().browse(logging_ids),
+            'logs': Logging.sudo().search(domain),
             'other_builds': other_builds
         }
         # context['type'] = type

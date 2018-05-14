@@ -5,6 +5,10 @@ import signal
 import re
 import logging
 import fcntl
+from collections import OrderedDict
+from contextlib import contextmanager
+
+import psycopg2
 
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -108,3 +112,19 @@ def s2human(time):
         if time >= delay:
             return str(int(time / delay)) + desc
     return str(int(time)) + "s"
+
+
+def uniq_list(l):
+    return OrderedDict.fromkeys(l).keys()
+
+
+@contextmanager
+def local_pgadmin_cursor():
+    cnx = None
+    try:
+        cnx = psycopg2.connect("dbname=postgres")
+        cnx.autocommit = True  # required for admin commands
+        yield cnx.cursor()
+    finally:
+        if cnx:
+            cnx.close()

@@ -113,12 +113,10 @@ class RunbotRepo(models.Model):
                     raise
 
     @api.multi
-    def update(self, values):
-        super().update(values)
+    def update_repo(self):
         for repo in self:
             self.update_git(repo)
 
-    @api.model
     def update_git(self, repo):
         _logger.debug('repo %s updating branches', repo.name)
 
@@ -148,7 +146,7 @@ class RunbotRepo(models.Model):
                   'committername', 'committeremail']
         fmt = "%00".join(["%(" + field + ")" for field in fields])
         git_refs = repo.git(['for-each-ref', '--format', fmt, '--sort=-committerdate', 'refs/heads', 'refs/pull'])
-        git_refs = git_refs.strip()
+        git_refs = git_refs.strip().decode()
 
         refs = [[field for field in line.split('\x00')] for line in git_refs.split('\n')]
 
@@ -191,7 +189,7 @@ class RunbotRepo(models.Model):
 
         # skip old builds (if their sequence number is too low, they will not ever be built)
         skippable_domain = [('repo_id', '=', repo.id), ('state', '=', 'pending')]
-        icp = self.pool['ir.config_parameter']
+        icp = self.env['ir.config_parameter']
         running_max = int(icp.get_param('runbot.running_max', default=75))
         to_be_skipped_ids = Build.search(skippable_domain, order='sequence desc', offset=running_max)
         Build.browse(to_be_skipped_ids).skip()
@@ -236,25 +234,24 @@ class RunbotRepo(models.Model):
                 sticky[build.branch_id.id] = build.id
             else:
                 non_sticky.append(build.id)
-        build_ids = sticky.values()
+        build_ids = list(sticky.values())
         build_ids += non_sticky
         # terminate extra running builds
-        build_ids[running_max:].kill()
-        build_ids.reap()
+        self.env['runbot.build'].browse(build_ids[running_max:]).kill()
+        self.env['runbot.build'].browse(build_ids).reap()
 
-    @api.model
     def reload_nginx(self):
         settings = {}
-        settings['port'] = config['xmlrpc_port']
+        settings['port'] = config['http_port']
         nginx_dir = os.path.join(self.root(), 'nginx')
         settings['nginx_dir'] = nginx_dir
-        ids = self.search([('nginx', '=', True)], order='id')
+        ids = self.search([('nginx', '=', True)], order='id').ids
         if ids:
             settings['builds'] = self.env['runbot.build'].search([('repo_id', 'in', ids), ('state', '=', 'running')])
 
-            nginx_config = self.env['ir.ui.view'].render("runbot.nginx_config", settings)
+            nginx_config = self.env.ref("runbot.nginx_config").render(settings)
             mkdirs([nginx_dir])
-            open(os.path.join(nginx_dir, 'nginx.conf'), 'w').write(nginx_config)
+            open(os.path.join(nginx_dir, 'nginx.conf'), 'wb').write(nginx_config)
             try:
                 _logger.debug('reload nginx')
                 pid = int(open(os.path.join(nginx_dir, 'nginx.pid')).read().strip(' \n'))
@@ -269,16 +266,14 @@ class RunbotRepo(models.Model):
                     else:
                         _logger.debug('failed to start nginx - failed to kill orphan worker - oh well')
 
-    @api.model
     def killall(self):
         # kill switch
         Build = self.env['runbot.build']
         build_ids = Build.search([('state', 'not in', ['done', 'pending'])])
         build_ids.kill()
 
-    @api.model
     def cron(self):
         all_repo = self.search([('mode', '!=', 'disabled')])
-        all_repo.update()
+        all_repo.update_repo()
         all_repo.scheduler()
         self.reload_nginx()

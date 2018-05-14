@@ -15,7 +15,18 @@ base from [odoo-extra](https://github.com/odoo/odoo-extra "odoo-extra runbot") r
         'python': ['matplotlib'],
     },
     'data': [
+        'data/ir_cron_data.xml',
+
+        'security/data.xml',
+        'security/ir.model.access.csv',
+        'security/ir.rule.csv',
+
         'views/runbot_repo_views.xml',
+        'views/runbot_branch_views.xml',
+        'views/runbot_build_views.xml',
+        'views/runbot_event_views.xml',
+        'views/templates.xml',
+
         'views/res_config_settings_views.xml',
     ],
     'installable': True,

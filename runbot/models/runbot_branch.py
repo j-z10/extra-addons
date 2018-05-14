@@ -8,12 +8,12 @@ class RunbotBranch(models.Model):
     _name = "runbot.branch"
     _order = 'name'
 
-    repo_id = fields.Many2one('runbot.repo', 'Repository', required=True, ondelete='cascade', select=1)
+    repo_id = fields.Many2one('runbot.repo', 'Repository', required=True, ondelete='cascade')
     name = fields.Char('Ref Name', required=True)
     branch_name = fields.Char(compute='_compute_branch_name_url', string='Branch', store=True)
     branch_url = fields.Char(compute='_compute_branch_name_url', string='Branch url')
     pull_head_name = fields.Char(compute='_compute_pull_head_name', string='PR HEAD name', readonly=1, store=True)
-    sticky = fields.Boolean('Sticky', select=1)
+    sticky = fields.Boolean('Sticky')
     coverage = fields.Boolean('Coverage')
     state = fields.Char('Status')
     modules = fields.Char("Modules to Install", help="Comma-separated list of modules to install and test.")

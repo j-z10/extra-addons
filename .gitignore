@@ -1,1 +1,11 @@
 *.py[c|o]
+# dotfiles
+.*
+# compiled python files
+*.py[co]
+# emacs backup files
+*~
+# runbot work files
+runbot/static/build
+runbot/static/repo
+runbot/static/nginx
