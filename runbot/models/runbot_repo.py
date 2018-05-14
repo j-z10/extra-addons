@@ -113,7 +113,8 @@ class RunbotRepo(models.Model):
                     raise
 
     @api.multi
-    def update(self):
+    def update(self, values):
+        super().update(values)
         for repo in self:
             self.update_git(repo)
 
