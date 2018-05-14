@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.runbot.build</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="50"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <div class="app_settings_block" data-string="Runbot" string="Runbot" data-key="runbot">
+                        <h2>Runbot</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 o_setting_box">
+                                <div class="o_setting_left_pane"/>
+                                <label string='Runbot Builds'/>
+                                <div class="text-muted">
+                                    Default Runbot settings
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <div class="content-group">
+                                        <div class="row mt16">
+                                            <label string="Total Number of Workers" for="default_workers" class="col-md-3 o_light_label"/>
+                                            <field name="default_workers" />
+                                        </div>
+                                        <div class="row">
+                                            <label string="Maximum Number of Running Builds" for="default_running_max" class="col-md-3 o_light_label"/>
+                                            <field name="default_running_max" />
+                                        </div>
+                                        <div class="row">
+                                            <label string="Default Timeout (in seconds)" for="default_timeout" class="col-md-3 o_light_label"/>
+                                            <field name="default_timeout" />
+                                        </div>
+                                        <div class="row">
+                                            <label string="Starting Port for Running Builds" for="default_starting_port" class="col-md-3 o_light_label"/>
+                                            <field name="default_starting_port" />
+                                        </div>
+                                        <div class="row">
+                                            <label string="Runbot Domain" for="default_domain" class="col-md-3 o_light_label"/>
+                                            <field name="default_domain" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_runbot_build_config" model="ir.actions.act_window">
+            <field name="name">Settings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'runbot.build'}</field>
+        </record>
+
+        <menuitem id="menu_runbot_config"
+            name="Configuration"
+            parent="menu_runbot_top"
+            sequence="46"/>
+        <menuitem id="menu_runbot_build_config" name="Settings" parent="menu_runbot_config"
+            sequence="0" action="action_runbot_build_config" groups="base.group_system"/>
+    </data>
+</odoo>
