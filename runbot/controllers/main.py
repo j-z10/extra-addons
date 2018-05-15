@@ -256,8 +256,8 @@ class RunbotController(http.Controller):
 
     @http.route(['/runbot/build/<build_id>/force'], type='http', auth="public", methods=['POST'], csrf=False)
     def build_force(self, build_id, **post):
-        registry, cr, uid, context = request.registry, request.cr, request.uid, request.context
-        repo_id = registry['runbot.build'].force(cr, uid, [int(build_id)])
+        env, cr, uid, context = request.env, request.cr, request.uid, request.context
+        repo_id = env['runbot.build'].browse([int(build_id)]).force()
         return werkzeug.utils.redirect('/runbot/repo/%s' % repo_id)
 
     @http.route([

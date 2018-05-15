@@ -352,7 +352,6 @@ class RunbotBuild(models.Model):
         cmd = [
             sys.executable,
             server_path,
-            "--xmlrpc-port=%d" % build.port,
             "--addons=%s" % build.server('addons'),
         ]
         # options
@@ -431,7 +430,8 @@ class RunbotBuild(models.Model):
         cmd, mods = build.cmd()
         if grep(build.server("tools/config.py"), "test-enable"):
             cmd.append("--test-enable")
-        cmd += ['-d', '%s-base' % build.dest, '-i', 'base', '--stop-after-init', '--log-level=test', '--max-cron-threads=0']
+        cmd += ['-d', '%s-base' % build.dest, '-i', 'base', '--no-http',
+                '--stop-after-init', '--log-level=test', '--max-cron-threads=0']
         return self.spawn(cmd, lock_path, log_path, cpu_limit=300)
 
     def job_20_test_all(self, build, lock_path, log_path):
@@ -440,10 +440,10 @@ class RunbotBuild(models.Model):
         cmd, mods = build.cmd()
         if grep(build.server("tools/config.py"), "test-enable"):
             cmd.append("--test-enable")
-        cmd += ['-d', '%s-all' % build.dest, '-i', mods, '--stop-after-init', '--log-level=test', '--max-cron-threads=0']
+        cmd += ['-d', '%s-all' % build.dest, '-i', mods,  '--no-http',
+                '--stop-after-init', '--log-level=test', '--max-cron-threads=0']
         # reset job_start to an accurate job_20 job_time
         build.write({'job_start': fields.Datetime.now()})
-        print(cmd)
         return self.spawn(cmd, lock_path, log_path, cpu_limit=2100)
 
     def job_30_run(self, build, lock_path, log_path):
@@ -470,6 +470,7 @@ class RunbotBuild(models.Model):
         cmd, mods = build.cmd()
         if os.path.exists(build.server('addons/im_livechat')):
             cmd += ["--workers", "2"]
+            cmd += ["--http-port", "%d" % build.port]
             cmd += ["--longpolling-port", "%d" % (build.port + 1)]
             cmd += ["--max-cron-threads", "1"]
         else:
