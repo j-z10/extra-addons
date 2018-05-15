@@ -5,7 +5,7 @@
     'description': """
 Trans workflow on odoo-10 to odoo-11.0
 """,
-    'depends': ['base'],
+    'depends': ['web'],
     'data': [
         'security/ir.model.access.csv',
 
