@@ -15,7 +15,7 @@
     'category': 'Tools',
     'version': '0.1',
 
-    'depends': ['base'],
+    'depends': ['web'],
     'data': [
         'templates.xml',
     ],
