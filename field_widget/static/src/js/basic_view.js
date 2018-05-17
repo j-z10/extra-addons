@@ -10,7 +10,6 @@ var _t = core._t;
 BasicView.include({
     init: function(viewInfo, params){
         this._super.apply(this, arguments);
-        this.controllerParams.archiveEnabled = 'active' in viewInfo.fields;
         if ('active' in viewInfo.fields) {
             if (viewInfo.arch.attrs.archive) {
                 this.controllerParams.archiveEnabled = JSON.parse(viewInfo.arch.attrs.archive);
