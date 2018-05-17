@@ -40,23 +40,58 @@
       <field name="name">test_wkf_eg window</field>
       <field name="res_model">test_wkf_eg.test_wkf_eg</field>
       <field name="view_mode">tree,form</field>
+      <field name="view_ids" eval="[(5,0,0),
+                          (0,0,{'view_mode':'tree', 'view_id': ref('list')}),
+                          (0,0,{'view_mode':'form', 'view_id': ref('form')})]"/>
     </record>
 
-    <!-- server action to the one above -->
-    <!--
-    <record model="ir.actions.server" id="test_wkf_eg.action_server">
-      <field name="name">test_wkf_eg server</field>
-      <field name="model_id" ref="model_test_wkf_eg_test_wkf_eg"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": self._name,
-        }
+    <record model="ir.ui.view" id="test_wkf_eg.list_2">
+      <field name="name">test_wkf_eg list 2</field>
+      <field name="model">test_wkf_eg.test_wkf_eg</field>
+      <field name="arch" type="xml">
+        <tree archive="false" export="false">
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+          <field name="state"/>
+        </tree>
       </field>
     </record>
-    -->
+    <record model="ir.ui.view" id="test_wkf_eg.form_2">
+      <field name="name">test_wkf_eg form2</field>
+      <field name="model">test_wkf_eg.test_wkf_eg</field>
+      <field name="arch" type="xml">
+        <form>
+          <header>
+            <button name="submit" string="Submit wkf" states="draft" type="workflow"/>
+            <button name="agree" string="Agree" states="to_approve" type="workflow"/>
+            <button name="deny" string="Deny" states="to_approve" type="workflow"/>
+            <field name="state" widget="statusbar"/>
+          </header>
+          <sheet>
+            <!--<div class="oe_button_box" name="button_box">-->
+                <!--<button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">-->
+                    <!--<field name="active" widget="boolean_button" options='{"terminology": "active"}'/>-->
+                <!--</button>-->
+            <!--</div>-->
+            <group col="4">
+              <field name="name"/>
+              <field name="value"/>
+              <field name="value2"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    <record model="ir.actions.act_window" id="test_wkf_eg.action_window2">
+      <field name="name">test_wkf_eg window2</field>
+      <field name="res_model">test_wkf_eg.test_wkf_eg</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_ids" eval="[(5,0,0),
+                          (0,0,{'view_mode':'tree', 'view_id': ref('list_2')}),
+                          (0,0,{'view_mode':'form', 'view_id': ref('form_2')})
+                          ]"/>
+    </record>
 
     <!-- Top menu item -->
     <menuitem name="test_wkf_eg" id="test_wkf_eg.menu_root"/>
@@ -65,6 +100,7 @@
     <!-- actions -->
     <menuitem name="List" id="test_wkf_eg.menu_1_list" parent="test_wkf_eg.menu_1"
               action="test_wkf_eg.action_window"/>
-    -->
+    <menuitem name="List" id="test_wkf_eg.menu_2_list" parent="test_wkf_eg.menu_1"
+              action="test_wkf_eg.action_window2"/>
   </data>
 </odoo>
