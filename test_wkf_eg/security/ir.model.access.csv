@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_test_wkf_eg_test_wkf_eg,test_wkf_eg.test_wkf_eg,model_test_wkf_eg_test_wkf_eg,,1,0,0,0
