@@ -20,7 +20,6 @@ var FieldLimitedChar = FieldChar.extend({
     _renderReadonly: function () {
         var origin_val = this._formatValue(this.value),
             limit = this.attrs.options && this.attrs.options.limit || 0;
-        console.log('origin_val is', origin_val);
         if (limit && (origin_val.length > limit)) {
             var limited_val = origin_val.slice(0, limit);
             var html = '<span title="' + origin_val + '">' + limited_val + '...</span>';
