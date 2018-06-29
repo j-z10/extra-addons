@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+        <template id="assets_backend" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/base_export_without_external_id/static/src/export.js"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>

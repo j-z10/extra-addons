@@ -1,0 +1,10 @@
+<template>
+    <t t-extend="ExportDialog">
+        <t t-jquery=".o_import_compat" t-operation="append">
+            <div>
+                <input name='o_export_with_out_external_id' class="o_export_with_out_external_id" type="checkbox" checked="checked"/>
+                <label>不导出外部数据ID</label>
+            </div>
+        </t>
+    </t>
+</template>
