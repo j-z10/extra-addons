@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+        <template id="assets_backend" name="client_download assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/client_download/static/src/list_controller.js"></script>
+            </xpath>
+        </template>
+    </data>
+</odoo>

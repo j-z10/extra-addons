@@ -1,0 +1,9 @@
+<templates>
+    <t t-extend="ListView.buttons">
+        <t t-jquery="button.o_list_button_add" t-operation="after">
+           <button type="button" class="btn btn-sm o_list_button_download">
+                Download
+            </button>
+        </t>
+    </t>
+</templates>
