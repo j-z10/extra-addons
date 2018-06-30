@@ -10,6 +10,7 @@ ListController.include({
         this.client_download_type = params.initialState.context.client_download_type;
     },
     renderButtons: function ($node) {
+        console.log('self', this);
         this._super.apply(this, arguments);
         if (!this.noLeaf && this.hasButtons) {
             this.$buttons.on('click', '.o_list_button_download', this._onButtonDownload.bind(this));
@@ -22,6 +23,9 @@ ListController.include({
             return headers.map(function(name){
                 var field = self.renderer.state.fields[name];
                 var value = record.data[name];
+                if (['boolean'].indexOf(field.type) > -1) {
+                    return value;
+                }
                 return field_utils.format[field.type](value, field, {
                     data: record.data,
                     escape: true
