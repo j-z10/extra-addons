@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+        <template id="ajax_demo.layout" name="Ajax Demo Page">
+            <html>
+                <head>
+                    <title>Demo Page</title>
+                    <t t-call-assets="web.assets_common" t-js="false"/>
+                    <t t-call-assets="web.assets_frontend" t-js="false"/>
+                    <t t-call-assets="web.assets_common" t-css="false"/>
+                    <t t-call-assets="web.assets_frontend" t-css="false"/>
+                    <script src="/ajax_demo/static/src/js/demo.js"></script>
+                </head>
+                <body>
+                    <h1>Hello, Demo</h1>
+                </body>
+            </html>
+        </template>
+
+
+    </data>
+</odoo>
