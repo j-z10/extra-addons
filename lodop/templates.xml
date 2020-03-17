@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+       <template id="assets_backend" name="lodop assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/lodop/static/src/lodop_lodop.js"></script>
+                <script type="text/javascript" src="/lodop/static/src/lodop_mainmenu.js"></script>
+            </xpath>
+        </template>
+
+    </data>
+</openerp>

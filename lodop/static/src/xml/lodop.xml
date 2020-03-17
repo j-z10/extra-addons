@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="lodop_print">
+        <div class="lodop_main_class">
+            <h1 class="doing">打印</h1>
+            <div class="progress">
+                <div class="progress-bar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+                  <span class="percent"/>
+                </div>
+            </div>
+            <p class="done_doc">打印完成：</p>
+        </div>
+    </t>
+
+</templates>
