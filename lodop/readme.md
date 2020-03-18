@@ -2,6 +2,8 @@
 
 1. 有坑, 如果odoo跑了多个db, 那么在lodop打印html的时候是获取不到html中样式文件. 因为lodop是单独请求的静态文件, 在它请求的session中没有指定db
 2. 如果是最普通的连打快递面单则简单的多, 需要用js画lodop的模板, 返回的rend_data给需要打印的关键数据, 然后options.type
+3. 如果强行要用lodop打印html, 我的建议是放弃odoo默认的report.html_container, 尤其是后期附件数量多了之后(t-call-assets在后期是个巨坑!!), wkhtmltopdf渲染的pdf简直慢到爆炸,
+    直接写最简单的html,然后内联样式,最后render出来用返回给前端lodop打印,贼快
 ```python
 
 class SaleOrder(models.Model):
